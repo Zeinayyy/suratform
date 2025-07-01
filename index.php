@@ -1,4 +1,5 @@
 <?php
+ini_set('memory_limit', '256M');
 // Langkah 1: Panggil autoloader dari Composer
 require __DIR__ . '/vendor/autoload.php';
 
@@ -46,6 +47,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $imageData = file_get_contents($pathToImage);
     $gambar_barcode_base64 = 'data:image/png;base64,' . base64_encode($imageData);
 
+    //logoo
+    $pathToLogo = 'images/logouniga.png';
+    $logoData = file_get_contents($pathToLogo);
+    $gambar_logo_base64 = 'data:image/png;base64,' . base64_encode($logoData);
+
     // Siapkan data untuk dikirim ke template PDF
     $data_pdf = [
         'nama' => $nama,
@@ -57,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'tempat_tujuan' => $tempat_tujuan,
         'tanggal_surat' => $tanggal_surat,
         'nomor_surat' => $nomor_surat_lengkap,
+        'gambar_logo' => $gambar_logo_base64,
         'gambar_barcode' => $gambar_barcode_base64
     ];
 

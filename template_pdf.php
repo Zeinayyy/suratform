@@ -7,9 +7,14 @@
         body { font-family: serif; font-size: 12pt; }
         .container { padding: 0 50px; }
         .kop-surat { text-align: center; line-height: 1.2; border-bottom: 3px solid black; padding-bottom: 10px; }
-        .kop-surat h3, .kop-surat h4 { margin: 0; }
-        .kop-surat p { font-size: 10pt; margin: 0; }
+        .kop-surat-table { width: 100%;}
+        .logo-cell { width: 90px; }
+        .logo-cell img { width: 80px; height: auto; }
+        .text-cell { text-align: center; line-height: 1.2; }
+        .text-cell h3, .text-cell h4 { margin: 0; }
+        .text-cell p { font-size: 8pt; margin: 0; }
         .content { margin-top: 30px; }
+        .content p { text-align: justify; }
         .yth { margin-top: 30px; }
         .table-data { border-collapse: collapse; width: 100%; margin: 20px 0; }
         .table-data td { padding: 5px; vertical-align: top; }
@@ -23,12 +28,22 @@
 <body>
     <div class="container">
         <div class="kop-surat">
-            <h3>UNIVERSITAS GARUT</h3>
-            <h4>PROGRAM PASCASARJANA</h4>
-            <p>Prodi Administrasi Negara TERAKREDITASI "B" SK BAN-PT NO. 4401/SK/BAN-PT/Ak-PPJ/M/XI/2019 Tanggal 05 November 2019</p>
-            <p>Prodi Manajemen Pendidikan Islam TERAKREDITASI "B" SK BAN-PT No.2039/SK/BAN-PT/Akred/M/VII/2018 Tanggal 31 Juli 2018</p>
-            <p>Prodi Manajemen Ijin Operasional No.241/KPT/I/2019 Tanggal 25 Maret 2019</p>
-            <p>Alamat: Jl. Raya Samarang No. 52A Telp. (0262) 238 626-544217 Fax. (0262) 544217 Tarogong Garut - 44151</p>
+            <table class="kop-surat-table">
+                <tr>
+                    <td class="logo-cell">
+                        <img src="<?php echo $data_pdf['gambar_logo']; ?>" alt="Logo Uniga">
+                    </td>
+                    <td class="text-cell">
+                        <h3>UNIVERSITAS GARUT</h3>
+                        <h4>PROGRAM PASCASARJANA</h4>
+                         <p>Program Doktor Administrasi Publik “TERAKREDITASI”  No. 5781/SK/BAN-PT/Ak.P/D/IX/2024 Tanggal 03 September 2024</p>
+                         <p>Prodi Administrasi Publik TERAKREDITASI "B" SK BAN-PT NO. 3893/SK/BAN-PT/Ak-PNB/IV/2024 Tanggal 24 April 2924</p>
+                         <p>Prodi Manajemen Pendidikan Islam TERAKREDITASI "Baik Sekali" SK LAMDIK No.1175/SK/LAMDIK/Ak/M/XII/2023 Tanggal 13 Desember 2023</p>
+                         <p>Prodi Manajemen TERAKREDITASI "Baik" SK BAN-PT No.5623/SK/BAN-PT/Ak/M/VIII/2022 Tanggal 23 Agustus 2022</p>
+                         <p>Alamat: Jl. Raya Samarang No. 52A Telp. (0262) 238 626-544217 Fax. (0262) 544217 Tarogong Garut - 44151</p>
+                    </td>
+                </tr>
+            </table>
         </div>
         <div class="content">
             <table style="width: 100%;">
@@ -38,7 +53,7 @@
                         Lampiran : - <br>
                         Perihal : Permohonan Izin
                     </td>
-                    <td style="width: 40%; text-align: left;">
+                    <td style="width: 40%; text-align: left; vertical-align: top">
                         Garut, <?php echo $data_pdf['tanggal_surat']; ?>
                     </td>
                 </tr>
