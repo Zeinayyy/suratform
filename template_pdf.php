@@ -12,9 +12,12 @@
         .content { margin-top: 30px; }
         .yth { margin-top: 30px; }
         .table-data { border-collapse: collapse; width: 100%; margin: 20px 0; }
-        .table-data td { padding: 5px; }
-        .signature { margin-top: 50px; text-align: right; width: 100%; }
-        .signature-block { display: inline-block; width: 250px; text-align: left; }
+        .table-data td { padding: 5px; vertical-align: top; }
+        .signature-section { margin-top: 40px; }
+        .signature-block { width: 300px; float: right; text-align: left; }
+        .signature-block .jabatan, .signature-block .nama-pejabat { line-height: 1.5; }
+        .signature-block .barcode-area { padding: 15px 0; }
+        .signature-block .nama-pejabat { font-weight: bold; }
     </style>
 </head>
 <body>
@@ -49,18 +52,40 @@
             <p>Assalamualaikum Wr. Wb.</p>
             <p>Salam sejahtera semoga kita semua dalam keadaan sehat wal'afiat.</p>
             <p>Sehubungan dengan penyusunan Usulan Penelitian Mahasiswa Program Studi <?php echo $data_pdf['prodi']; ?> Program Pascasarjana Universitas Garut tahun akademik (<?php echo $data_pdf['tahun_akademik']; ?>). Bersama ini dengan hormat, kami memohon perkenan Bapak/Ibu menerima mahasiswa kami untuk melakukan observasi melalui wawancara/pengumpulan data. Mahasiswa atasnama:</p>
+            
             <table class="table-data">
-                <tr><td style="width: 15%;">Nama</td><td>: <?php echo $data_pdf['nama']; ?></td></tr>
-                <tr><td>NPM</td><td>: <?php echo $data_pdf['npm']; ?></td></tr>
-                <tr><td>Program Studi</td><td>: <?php echo $data_pdf['prodi']; ?></td></tr>
+                <tr>
+                    <td style="width: 20%;">Nama</td>
+                    <td style="width: 5%;">:</td>
+                    <td><?php echo $data_pdf['nama']; ?></td>
+                </tr>
+                <tr>
+                    <td>NPM</td>
+                    <td>:</td>
+                    <td><?php echo $data_pdf['npm']; ?></td>
+                </tr>
+                <tr>
+                    <td>Program Studi</td>
+                    <td>:</td>
+                    <td><?php echo $data_pdf['prodi']; ?></td>
+                </tr>
+                <tr>
+                    <td>Judul Penelitian</td>
+                    <td>:</td>
+                    <td><?php echo $data_pdf['judul_penelitian']; ?></td>
+                </tr>
             </table>
+            
             <p>Demikian permohonan ini kami sampaikan, atas perhatian dan perkenannya kami ucapkan terima kasih.</p>
             <p>Wassalamualaikum Wr. Wb.</p>
-            <div class="signature">
+
+            <div class="signature-section">
                 <div class="signature-block">
-                    Direktur,
-                    <br><br><br><br><br>
-                    <strong>Dr. Gugun Geusan Akbar, M.Si.</strong>
+                    <div class="jabatan">Direktur Pascasarjana Universitas Garut,</div>
+                    <div class="barcode-area">
+                        <img src="<?php echo $data_pdf['gambar_barcode']; ?>" alt="barcode" width="120">
+                    </div>
+                    <div class="nama-pejabat">Dr. Gugun Geusan Akbar, M.Si.</div>
                 </div>
             </div>
         </div>

@@ -15,13 +15,10 @@ function toRoman($number) {
 // Langkah 3: Cek apakah formulir telah di-submit
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // --- LOGIKA BARU: VALIDASI CENTANG KONFIRMASI ---
-    // Cek apakah kotak konfirmasi dicentang. Jika tidak, hentikan proses.
+    // Validasi centang konfirmasi
     if (!isset($_POST['konfirmasi'])) {
         die('Anda harus mencentang kotak konfirmasi yang menyatakan data sudah benar sebelum melanjutkan. Silakan kembali dan coba lagi.');
     }
-    // --- AKHIR LOGIKA VALIDASI ---
-
 
     // Logika untuk nomor surat berurutan
     $file_counter = 'nomor_surat.txt';
@@ -30,12 +27,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     file_put_contents($file_counter, $nomor_baru);
 
     // Ambil data dari formulir
-    $nama = htmlspecialchars($_POST['nama'] ?? 'Data Kosong');
-    $npm = htmlspecialchars($_POST['npm'] ?? 'Data Kosong');
-    $prodi = htmlspecialchars($_POST['prodi'] ?? 'Data Kosong');
-    $tahun_akademik = htmlspecialchars($_POST['tahun_akademik'] ?? 'Data Kosong');
-    $tujuan_surat = htmlspecialchars($_POST['tujuan_surat'] ?? 'Data Kosong');
-    $tempat_tujuan = htmlspecialchars($_POST['tempat_tujuan'] ?? 'Data Kosong');
+    $nama = htmlspecialchars($_POST['nama'] ?? '');
+    $npm = htmlspecialchars($_POST['npm'] ?? '');
+    $prodi = htmlspecialchars($_POST['prodi'] ?? '');
+    $tahun_akademik = htmlspecialchars($_POST['tahun_akademik'] ?? '');
+    $judul_penelitian = htmlspecialchars($_POST['judul_penelitian'] ?? ''); // <-- Mengambil data judul penelitian
+    $tujuan_surat = htmlspecialchars($_POST['tujuan_surat'] ?? '');
+    $tempat_tujuan = htmlspecialchars($_POST['tempat_tujuan'] ?? '');
     
     // Buat komponen tanggal dan nomor surat
     $tanggal_surat = date('d F Y');
@@ -43,16 +41,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tahun = date('Y');
     $nomor_surat_lengkap = sprintf('%03d/D/PP-UNIGA/%s/%s', $nomor_baru, $bulan_romawi, $tahun);
 
+    // Memuat gambar barcode dari file
+    $pathToImage = 'images/Pa_Gugun.png'; // Menyesuaikan nama file gambar
+    $imageData = file_get_contents($pathToImage);
+    $gambar_barcode_base64 = 'data:image/png;base64,' . base64_encode($imageData);
+
     // Siapkan data untuk dikirim ke template PDF
     $data_pdf = [
         'nama' => $nama,
         'npm' => $npm,
         'prodi' => $prodi,
         'tahun_akademik' => $tahun_akademik,
+        'judul_penelitian' => $judul_penelitian, // <-- Mengirim data judul penelitian
         'tujuan_surat' => $tujuan_surat,
         'tempat_tujuan' => $tempat_tujuan,
         'tanggal_surat' => $tanggal_surat,
-        'nomor_surat' => $nomor_surat_lengkap
+        'nomor_surat' => $nomor_surat_lengkap,
+        'gambar_barcode' => $gambar_barcode_base64
     ];
 
     // Siapkan HTML untuk PDF
@@ -68,8 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $dompdf->loadHtml($html);
     $dompdf->setPaper('A4', 'portrait');
     $dompdf->render();
-
-    // Kirim PDF ke browser
+    
     $dompdf->stream("Surat-Pengantar-" . $nama . ".pdf", ["Attachment" => false]);
     
     exit();
@@ -88,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         h2 { text-align: center; color: #444; }
         .form-group { margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; font-weight: bold; }
-        input[type="text"], select { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        input[type="text"], select, textarea { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
         .confirmation-group { display: flex; align-items: center; margin-bottom: 20px; }
         .confirmation-group input { width: auto; margin-right: 10px; }
         button { display: block; width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
@@ -111,14 +115,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label for="prodi">Program Studi</label>
                 <select id="prodi" name="prodi" required>
                     <option value="">-- Pilih Program Studi --</option>
+                    <option value="Doktor Administrasi Publik">Doktor Administrasi Publik</option>
                     <option value="Magister Administrasi Publik">Magister Administrasi Publik</option>
                     <option value="Manajemen Pendidikan Islam">Manajemen Pendidikan Islam</option>
-                    <option value="Manajemen">Manajemen</option>
+                    <option value="Magsiter Manajemen">Magister Manajemen</option>
                 </select>
             </div>
             <div class="form-group">
                 <label for="tahun_akademik">Tahun Akademik</label>
                 <input type="text" id="tahun_akademik" name="tahun_akademik" placeholder="Contoh: 2024/2025" required>
+            </div>
+            <div class="form-group">
+                <label for="judul_penelitian">Judul Penelitian</label>
+                <textarea id="judul_penelitian" name="judul_penelitian" rows="3" required></textarea>
             </div>
             <div class="form-group">
                 <label for="tujuan_surat">Tujuan Surat (Kepada Yth:)</label>
@@ -128,7 +137,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label for="tempat_tujuan">Tempat Tujuan (di)</label>
                 <input type="text" id="tempat_tujuan" name="tempat_tujuan" placeholder="Contoh: Jakarta" required>
             </div>
-
             <hr>
             <div class="confirmation-group">
                 <input type="checkbox" id="konfirmasi" name="konfirmasi" value="setuju" required>
