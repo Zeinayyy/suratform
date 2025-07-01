@@ -6,28 +6,28 @@ require __DIR__ . '/vendor/autoload.php';
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
-// --- FUNGSI BARU UNTUK MENGUBAH ANGKA MENJADI ROMAWI ---
+// Fungsi untuk mengubah angka menjadi Romawi
 function toRoman($number) {
     $map = [1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV', 5 => 'V', 6 => 'VI', 7 => 'VII', 8 => 'VIII', 9 => 'IX', 10 => 'X', 11 => 'XI', 12 => 'XII'];
     return $map[$number] ?? $number;
 }
 
-// Langkah 3: Cek apakah formulir telah di-submit (method adalah POST)
+// Langkah 3: Cek apakah formulir telah di-submit
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // --- LOGIKA BARU UNTUK NOMOR SURAT BERURUTAN ---
+    // --- LOGIKA BARU: VALIDASI CENTANG KONFIRMASI ---
+    // Cek apakah kotak konfirmasi dicentang. Jika tidak, hentikan proses.
+    if (!isset($_POST['konfirmasi'])) {
+        die('Anda harus mencentang kotak konfirmasi yang menyatakan data sudah benar sebelum melanjutkan. Silakan kembali dan coba lagi.');
+    }
+    // --- AKHIR LOGIKA VALIDASI ---
+
+
+    // Logika untuk nomor surat berurutan
     $file_counter = 'nomor_surat.txt';
-
-    // Baca nomor terakhir dari file, jika file tidak ada, mulai dari 0
     $nomor_sekarang = file_exists($file_counter) ? (int)file_get_contents($file_counter) : 0;
-
-    // Tambah nomor dengan 1 untuk surat baru ini
     $nomor_baru = $nomor_sekarang + 1;
-
-    // Simpan kembali nomor baru ke dalam file untuk digunakan selanjutnya
     file_put_contents($file_counter, $nomor_baru);
-    // --- AKHIR LOGIKA NOMOR SURAT ---
-
 
     // Ambil data dari formulir
     $nama = htmlspecialchars($_POST['nama'] ?? 'Data Kosong');
@@ -38,12 +38,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tempat_tujuan = htmlspecialchars($_POST['tempat_tujuan'] ?? 'Data Kosong');
     
     // Buat komponen tanggal dan nomor surat
-    $tanggal_surat = date('d F Y'); // Format tanggal: 23 June 2025
-    $bulan_romawi = toRoman(date('n')); // 'n' untuk bulan tanpa angka 0 di depan (1-12)
+    $tanggal_surat = date('d F Y');
+    $bulan_romawi = toRoman(date('n'));
     $tahun = date('Y');
-
-    // Gabungkan menjadi format nomor surat lengkap
-    // sprintf('%03d', $nomor_baru) akan membuat format 3 digit dengan angka 0 di depan, cth: 001, 002, 015
     $nomor_surat_lengkap = sprintf('%03d/D/PP-UNIGA/%s/%s', $nomor_baru, $bulan_romawi, $tahun);
 
     // Siapkan data untuk dikirim ke template PDF
@@ -58,14 +55,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'nomor_surat' => $nomor_surat_lengkap
     ];
 
-
-    // Langkah 4: Siapkan HTML untuk PDF
+    // Siapkan HTML untuk PDF
     ob_start();
-    // Kita 'include' template terpisah agar lebih rapi, dan kirim data ke dalamnya
     include 'template_pdf.php';
     $html = ob_get_clean();
 
-    // Langkah 5: Buat objek Dompdf
+    // Buat objek Dompdf
     $options = new Options();
     $options->set('isRemoteEnabled', true);
     $dompdf = new Dompdf($options);
@@ -74,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $dompdf->setPaper('A4', 'portrait');
     $dompdf->render();
 
-    // Langkah 6: Kirim PDF ke browser
+    // Kirim PDF ke browser
     $dompdf->stream("Surat-Pengantar-" . $nama . ".pdf", ["Attachment" => false]);
     
     exit();
@@ -94,6 +89,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .form-group { margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; font-weight: bold; }
         input[type="text"], select { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        .confirmation-group { display: flex; align-items: center; margin-bottom: 20px; }
+        .confirmation-group input { width: auto; margin-right: 10px; }
         button { display: block; width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
         button:hover { background-color: #0056b3; }
     </style>
@@ -130,6 +127,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="form-group">
                 <label for="tempat_tujuan">Tempat Tujuan (di)</label>
                 <input type="text" id="tempat_tujuan" name="tempat_tujuan" placeholder="Contoh: Jakarta" required>
+            </div>
+
+            <hr>
+            <div class="confirmation-group">
+                <input type="checkbox" id="konfirmasi" name="konfirmasi" value="setuju" required>
+                <label for="konfirmasi">Saya menyatakan bahwa semua data yang saya isi sudah benar.</label>
             </div>
             <button type="submit">Generate Surat</button>
         </form>
